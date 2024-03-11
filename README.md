@@ -179,4 +179,5 @@ The `imageModel.js` defines the schema for storing image data in the MongoDB dat
 - `text`: String - Additional text or description associated with the image.
 - `timestamps`: Boolean - Indicates whether to include timestamps for document creation and modification.
 
-
+##Note:
+The project was developed according to the instructions provided by Secureblink assessmemt pdf with Task:: Building a Secure User Authentication and Authorization System with Express.js and is prepared by Parath Safaya for same.

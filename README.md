@@ -1,29 +1,30 @@
-# Secure-Blink assignment for backend intern role by Parath Safaya
+# Secure-Blink assignment & documentation for backend intern role by Parath Safaya
 
 This repository contains an application with robust user authentication and authorization functionalities, distinguishing between users and administrators with varying permissions. Administrators can add, delete, and view images along with their captions, while users can only view images. The application implements multiple security measures, safeguarding against XML, CSRF, NoSQL query injections, HTTP security header vulnerabilities, and Denial of Service (DOS) attacks. Developed using Node.js and Express.js, the application relies on MongoDB as its database backend.
 ## Project Structure
 
 ```plaintext
-HYPERGROW_AI/
+securelink_assignment_parath/
 |-- config/
 |   |-- dbConnection.js
+|   |-- loggerModel.js
 |-- controllers/
-|   |-- equityControllers.js
-|   |-- favouriteController.js
-|   |-- userController.js
+|   |-- imageControllers.js
+|   |-- userControllers.js
 |-- middleware/
-|   |-- errorHandler.js
+|   |-- userAuth.js
 |   |-- validateTokenHandler.js
 |-- models/
-|   |-- equityModel.js
-|   |-- favouriteModel.js
+|   |-- imageModel.js
 |   |-- userModel.js
+|-- Postman-export/
+|   |-- secureblink_assignment.postman_collection.json
 |-- routes/
-|   |-- equityRoutes.js
-|   |-- favouriteRoutes.js
-|   |-- userRoutes.js
+|   |-- imageRoute.js
+|   |-- userRoute.js
+|-- test/
+|   |-- app.test.js
 |-- index.js
-|-- script.js
 ```
 
 ## Installation and Setup
@@ -32,7 +33,7 @@ HYPERGROW_AI/
 
    ```bash
    git clone <repository-url>
-   cd HYPERGROW_AI
+   cd securelink_assignment_parath
    ```
 
 2. Install dependencies:
@@ -45,115 +46,137 @@ HYPERGROW_AI/
 
    ```plaintext
    PORT=<port-number>
-   CONNECTION_STRING=<your-mongodb-connection-string>
-   ACCESS_TOKEN_SECRET=<your-secret-key>
+   CONNECTION_STRING=<mongodb-connection-string>
+   ACCESS_TOKEN_SECRET=<access-token-secret-key-for jwt>
+   EMAIL_USER=<email from which email is to be sent token after forgot password>
+   EMAIL_PASSWORD=<password-of-EMAIL_PASSWORD(If gmail,do two way verification and generate custom app key)>
+   ADMIN_PASS=<Password to give a user admin privelidges while registering >
    ```
 
-4. Run the script to populate the database with stock data:
-
-   ```bash
-   node script.js
-   ```
-
-5. Run the application:
+4. Run the application:
 
    ```bash
    npm start
    ```
    
-6. Run Swagger Documentation on:
+6. Run test :
 
-   ```plaintext
-   http://localhost:<PORT>/api-docs/
+   ```bash
+   npm test
    ```
 
 ## API Usage
 
-### Equity API
-
-- **GET /api/stocks/top10**
-  - Get the top 10 latest stocks.
-  - Implemented cache for faster retreival
-  
-    Example:
-    ```plaintext
-    GET /api/stocks/top10
-    ```
-
-- **GET /api/stocks?SC_NAME=<stock-name>**
-  - Get a stock by name.
-  - 
-    Example:
-    ```plaintext
-    GET /api/stocks?SC_NAME=Reliance
-    ```
-
-- **GET /api/stocks/history?SC_NAME=<stock-name>**
-  - Get stock price history list for UI graph.
-  - Implemented cache for faster retreival
-  
-    Example:
-    ```plaintext
-    GET /api/stocks/history?SC_NAME=TCS
-    ```
-
-### Favourites API
-
-- **GET /api/fav**
-  - Get all favourite stocks. (Requires user authentication)
-
-    Example:
-    ```plaintext
-    GET /api/fav
-    ```
-
-- **POST /api/fav**
-  - Add a stock to favourites. (Requires user authentication)
-
-    Example:
-    ```plaintext
-    POST /api/fav
-    Body: { "stockName": "Infosys" }
-    ```
-
-- **DELETE /api/fav/:id**
-  - Remove a stock from favourites. (Requires user authentication)
-
-    Example:
-    ```plaintext
-    DELETE /api/fav/608f19cfe3b07b001e1e3e23
-    ```
-
-### User API
+### Users API
 
 - **POST /api/users/register**
-  - Register a new user.
-
+  - Register a user
+  - Body's JSON should contain: username, email, password, role, adminpass
+  
     Example:
     ```plaintext
     POST /api/users/register
-    Body: { "username": "john_doe", "email": "john@example.com", "password": "password123" }
     ```
-
+    
 - **POST /api/users/login**
-  - Login a user.
-
+  - Login to a user
+  - Body's JSON should contain: = email, password
+  
     Example:
     ```plaintext
     POST /api/users/login
-    Body: { "email": "john@example.com", "password": "password123" }
     ```
 
-- **GET /api/users/current**
-  - Get current user information. (Requires user authentication)
+- **POST /api/users/forget-password**
+  - Get token for reset password in mail mentioned
+  - Body's JSON should contain: = email
+  
+    Example:
+    ```plaintext
+    POST /api/users/forget-password
+    ```
+    
+- **POST /api/users/reset-password/:token**
+  - Reset the password of user 
+  - Body's JSON should contain: =  password (new-password)
+  
+    Example:
+    ```plaintext
+    POST /api/users/reset-password/:token
+    ```
+
+### Users API
+
+- **POST /api/images/add**
+  - Add new image with caption in database
+  - Body's form should contain: =  file : <image-uploaded> & text : string
+  - Only admin has this permission
+    Example:
+    ```plaintext
+    *POST /api/images/add
+    ```
+
+- **DELETE /api/images/delete/:id**
+  - Delete image and caption from database(only admin authorized)
+  
+    Example:
+    ```plaintext
+    DELETE /api/images/delete/:id
+    ```
+
+- **GET /api/images/view**
+  - Get all images and caption
 
     Example:
     ```plaintext
-    GET /api/users/current
+    GET /api/images/view
     ```
 
-## Important Note
 
-Before starting the server, make sure to run the `script.js` script to download the latest stock data from BSE(you can add date,month,year in the script to have stock data of your choice) and populate the database. This ensures that the application has the necessary stock documents for the APIs to function correctly.
+### imageRoute:
+Each request is passed through 3 middlewares:
 
-**Note:** For /api/fav Routes Users must register and log in to perform actions such as adding, deleting, or retrieving favourite stocks. Authentication is required to access these routes for security purposes.
+## parseForm:
+This is implemented for security from CSRF vulnerability.
+## validateToken:
+This is used for authentication and uses JWT tokens for same.
+## userAuth():
+This is implemented for User Roles and Authorization.
+
+### userRoute:
+## Each route has implemented with parseForm for security from CSRF vulnerability.
+
+### index.js (Entry points)
+This Express.js application sets up a server with various security measures and routes for user authentication, image management, and more. Key features include:
+
+1.Security Measures: Implemented protection against Cross-Site Scripting (XSS) attacks, rate limiting to prevent DoS attacks, and sanitation to prevent NoSQL injection attacks.
+2.Routes Setup: Defines routes for user registration, login, and password recovery, as well as routes for image and blog management.
+3.Middleware: Utilizes middleware like CORS for handling cross-origin requests and body-parser for parsing incoming request bodies.
+Server Configuration: Binds the server to the specified port, with logging to indicate successful server startup.
+
+
+
+### userModel.js
+
+#### Description:
+The `userModel.js` defines the schema for storing user data in the MongoDB database.
+
+#### Schema:
+- `username`: String - The username of the user.
+- `email`: String - The email address of the user.
+- `password`: String - The hashed password of the user.
+- `role`: String - The role of the user, which can be either "user" or "admin".
+- `token`: String - An optional token associated with the user.
+- `timestamps`: Boolean - Indicates whether to include timestamps for document creation and modification.
+
+### imageModel.js
+
+#### Description:
+The `imageModel.js` defines the schema for storing image data in the MongoDB database.
+
+#### Schema:
+- `image`: String - The URL or path of the image file.
+- `text`: String - Additional text or description associated with the image.
+- `timestamps`: Boolean - Indicates whether to include timestamps for document creation and modification.
+
+

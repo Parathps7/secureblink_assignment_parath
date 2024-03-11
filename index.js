@@ -45,7 +45,7 @@ app.use(rateLimiter)
 app.use(helmet())
 
 
-//5.Prevent NoSQL query instruction
+//5.Prevent NoSQL query injection
 app.use(mongoSanitize())
 
 // routes setup

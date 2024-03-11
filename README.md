@@ -136,15 +136,15 @@ securelink_assignment_parath/
 ### imageRoute:
 Each request is passed through 3 middlewares:
 
-## parseForm:
+- parseForm:
 This is implemented for security from CSRF vulnerability.
-## validateToken:
+- validateToken:
 This is used for authentication and uses JWT tokens for same.
-## userAuth():
+- userAuth():
 This is implemented for User Roles and Authorization.
 
 ### userRoute:
-## Each route has implemented with parseForm for security from CSRF vulnerability.
+- Each route has implemented with parseForm for security from CSRF vulnerability.
 
 ### index.js (Entry points)
 This Express.js application sets up a server with various security measures and routes for user authentication, image management, and more. Key features include:

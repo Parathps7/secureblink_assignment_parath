@@ -105,7 +105,7 @@ securelink_assignment_parath/
     POST /api/users/reset-password/:token
     ```
 
-### Users API
+### Images API
 
 - **POST /api/images/add**
   - Add new image with caption in database

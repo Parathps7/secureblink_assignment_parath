@@ -32,7 +32,7 @@ connectdb();
 //2. Data sanitization against XSS attacks
 app.use(xss())
 
-//3.Rate limiting
+//3.Rate limiting - prevent DOS
 const rateLimiter = rateLimit({
     max: 100,
     windowMs: 60*60*1000,
@@ -58,6 +58,10 @@ app.use('/api/users',userRoute);
 
 //image and blog portal
 app.use('/api/images',imageRoute);
+
+//error handling
+const errorHandle = require('./middlewares/errorHandling')
+app.use(errorHandle)
 
 const server = app.listen(process.env.PORT,()=>{logger.error(`info`,`Server is runnning on port ${process.env.PORT}`)})
 

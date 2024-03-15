@@ -4,7 +4,7 @@ const Image = require('../models/imageModel')
 // add image and caption
 const add = asyncHandler(async(req,res) => {
     const imagedata = req.file.filename;
-    const Caption = (req.body.text) ;
+    const Caption = (req.body.text)?(req.body.text):"" ;
     // console.log(Caption)
     if( !req.file ){
         res.status(409).send("File not uploaded");

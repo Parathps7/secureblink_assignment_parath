@@ -62,6 +62,9 @@ const login = asyncHandler(async(req,res) => {
         {expiresIn: '1d'});
         res.status(200).json({accessToken})
         }
+        else{
+            res.status(401).send({success:false,msg:"Password invalid"})
+        }
     }else{
         res.status(403)
         throw new Error("email or password not valid");

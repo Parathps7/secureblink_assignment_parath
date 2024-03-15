@@ -136,8 +136,10 @@ const forgetpassword = asyncHandler(async(req,res) => {
 
 
 const resetpassword = asyncHandler(async(req,res) => {
-    const password = req.body.password;
+    const {password} = req.body;
     const token = req.params.token;
+    console.log(password)
+    if(password === undefined || password.length < 8 ){res.status(404).send({success:false,msg:"Please enter a password and also > 8 letters"})}
     const userData =await User.findOne({token});
     if(!userData){
         res.status(401).send({msg:"Link expired!"})

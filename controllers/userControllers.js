@@ -120,6 +120,7 @@ const register = asyncHandler(async(req,res) => {
 
 const forgetpassword = asyncHandler(async(req,res) => {
     const {email} = req.body;
+    if(!email){res.status(404).send({success:false,msg:"Please enter email"})}
     const userData = await User.findOne({email});
     if( !userData ){
         res.status(404);

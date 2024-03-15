@@ -44,8 +44,7 @@ const sendresetemail = async(name,email,token) => {
 const login = asyncHandler(async(req,res) => {
     const {email,password}=req.body
     if(!email||!password){
-        res.status(422);
-        throw new Error("All fields are mandatory") 
+        res.status(422).send({success:false,msg:"All fields are mandatory"}) 
     }
     const user = await User.findOne({email});
     //compare password with hashed passowrd

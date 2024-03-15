@@ -77,8 +77,7 @@ const register = asyncHandler(async(req,res) => {
     }
     const userAvailable = await User.findOne({email});
     if(userAvailable){
-        res.status(409);
-        throw new Error("user already registered")
+        res.status(409).send("user already registered")
     }
     // hash password
     const hashedPassword = await bcrypt.hash(password,10);

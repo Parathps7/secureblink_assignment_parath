@@ -127,6 +127,7 @@ const forgetpassword = asyncHandler(async(req,res) => {
     const Token = jwt.sign({id: userData._id},process.env.ACCESS_TOKEN_SECRET,{expiresIn: "1d"});
     const data = await User.updateOne({email:email},{$set:{token: Token}});
     sendresetemail(userData.name,userData.email,Token);
+    // We are returning token in response here just to run tests,in real world scenerio token will only be sent via email
     res.status(200).send({token:Token,success:true,msg:`Reset email sent to ${req.body.email}.Please check Inbox!.Make POST request with "password"=<new_password> in body`})
 
 });
